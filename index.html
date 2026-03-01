@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discover Your Superhero Identity</title>
+
+<style>
+/* =========================
+   GLOBAL STYLES
+========================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  color: white;
+}
+
+/* =========================
+   MAIN CONTAINER
+========================= */
+
+.container {
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+}
+
+/* =========================
+   LANDING SECTION
+========================= */
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  background: linear-gradient(90deg, #00f5ff, #ff00c8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+  font-size: 1rem;
+  margin-bottom: 25px;
+  opacity: 0.85;
+}
+
+/* =========================
+   GLASS CARD
+========================= */
+
+.card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  padding: 30px 20px;
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+  transition: 0.5s ease;
+}
+
+/* =========================
+   INPUT
+========================= */
+
+input[type="date"] {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  margin-bottom: 20px;
+  font-size: 1rem;
+  outline: none;
+}
+
+/* =========================
+   BUTTON
+========================= */
+
+button {
+  padding: 12px 20px;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: 0.3s ease;
+  background: linear-gradient(90deg, #00f5ff, #ff00c8);
+  color: white;
+  box-shadow: 0 0 15px rgba(255, 0, 200, 0.5);
+}
+
+button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.8);
+}
+
+/* =========================
+   RESULT SECTION
+========================= */
+
+.result {
+  margin-top: 25px;
+  display: none;
+  animation: fadeIn 1s ease forwards;
+}
+
+.hero-name {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.power-type {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  color: #00f5ff;
+}
+
+ul {
+  text-align: left;
+  margin: 10px 0;
+}
+
+.description {
+  margin-top: 10px;
+  font-style: italic;
+  opacity: 0.9;
+}
+
+.extra-buttons {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* =========================
+   ANIMATION
+========================= */
+
+@keyframes fadeIn {
+  from {opacity: 0; transform: translateY(20px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.6rem;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <h1>Discover Your Superhero Identity</h1>
+  <div class="subtitle">Enter your birth date and unlock your hidden powers.</div>
+
+  <div class="card">
+    <input type="date" id="birthdate">
+    <button onclick="generateHero()">Reveal My Hero</button>
+
+    <div class="result" id="result">
+      <div class="hero-name" id="heroName"></div>
+      <div class="power-type" id="powerType"></div>
+      <ul id="traits"></ul>
+      <div class="description" id="description"></div>
+
+      <div class="extra-buttons">
+        <button onclick="copyResult()">Share</button>
+        <button onclick="playAgain()">Play Again</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+/* =========================
+   DATA ARRAYS
+========================= */
+
+const heroNames = [
+"Nova Phantom","Crimson Vortex","Shadow Titan","Celestial Blaze",
+"Quantum Valkyrie","Obsidian Pulse","Solar Warden","Nebula Knight",
+"Frost Sentinel","Thunder Specter","Void Striker","Arcane Phoenix",
+"Storm Revenant","Iron Mirage","Lunar Cipher","Radiant Havoc",
+"Cosmic Drifter","Inferno Guardian","Aether Hunter","Chrono Fury"
+];
+
+const powerCategories = [
+"Fire Manipulation",
+"Water Control",
+"Cosmic Energy",
+"Advanced Tech Genius",
+"Shadow Mastery",
+"Storm & Lightning"
+];
+
+const personalityTraits = [
+"Fearless","Strategic","Compassionate","Relentless","Visionary",
+"Calm Under Pressure","Bold","Mysterious","Charismatic","Resilient",
+"Loyal","Adventurous","Intelligent","Swift Thinker","Protective",
+"Creative","Disciplined","Empathetic","Independent","Driven",
+"Honorable","Curious","Confident","Energetic","Wise",
+"Focused","Adaptable","Determined","Optimistic","Leader"
+];
+
+/* =========================
+   HERO GENERATION LOGIC
+========================= */
+
+function generateHero() {
+  const input = document.getElementById("birthdate").value;
+  if (!input) {
+    alert("Please enter your birth date!");
+    return;
+  }
+
+  const date = new Date(input);
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+
+  // Deterministic seed
+  const seed = day * month + year;
+
+  const heroIndex = seed % heroNames.length;
+  const powerIndex = month % powerCategories.length;
+
+  const trait1 = personalityTraits[seed % personalityTraits.length];
+  const trait2 = personalityTraits[(seed + 7) % personalityTraits.length];
+  const trait3 = personalityTraits[(seed + 13) % personalityTraits.length];
+
+  const hero = heroNames[heroIndex];
+  const power = powerCategories[powerIndex];
+
+  const descriptionText = 
+    hero + " channels " + power + 
+    " with unstoppable force. Born on a day aligned with destiny, this hero rises whenever the world faces chaos.";
+
+  // Display result
+  document.getElementById("heroName").innerText = hero;
+  document.getElementById("powerType").innerText = "Power Type: " + power;
+
+  document.getElementById("traits").innerHTML =
+    "<li>" + trait1 + "</li>" +
+    "<li>" + trait2 + "</li>" +
+    "<li>" + trait3 + "</li>";
+
+  document.getElementById("description").innerText = descriptionText;
+
+  document.getElementById("result").style.display = "block";
+}
+
+/* =========================
+   SHARE FUNCTION
+========================= */
+
+function copyResult() {
+  const hero = document.getElementById("heroName").innerText;
+  const power = document.getElementById("powerType").innerText;
+  const description = document.getElementById("description").innerText;
+
+  const text = hero + "\n" + power + "\n" + description;
+
+  navigator.clipboard.writeText(text);
+  alert("Copied to clipboard!");
+}
+
+/* =========================
+   RESET FUNCTION
+========================= */
+
+function playAgain() {
+  document.getElementById("birthdate").value = "";
+  document.getElementById("result").style.display = "none";
+}
+
+</script>
+</body>
+</html>
